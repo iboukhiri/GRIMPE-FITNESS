@@ -49,8 +49,6 @@ const upload = multer({
  */
 export const uploadAndExtractPDF = async (req, res) => {
   try {
-    console.log('📁 PDF upload initiated...');
-    
     // Handle file upload
     upload.single('pdf')(req, res, async (uploadError) => {
       if (uploadError) {
@@ -69,7 +67,6 @@ export const uploadAndExtractPDF = async (req, res) => {
       }
 
       const filePath = req.file.path;
-      console.log(`📄 Processing PDF: ${req.file.filename}`);
 
       try {
         // Extract data from PDF
@@ -95,11 +92,9 @@ export const uploadAndExtractPDF = async (req, res) => {
         
         if (req.user && extractionResult.data.workouts.length > 0) {
           try {
-            console.log('💾 Saving extracted data to database...');
             const saveResult = await saveExtractedData(req.user.id, extractionResult.data);
             savedWorkouts = saveResult.workouts;
             savedMetrics = saveResult.metrics;
-            console.log(`✅ Saved ${savedWorkouts.length} workouts and ${savedMetrics.length} metrics`);
           } catch (saveError) {
             console.warn('⚠️ Failed to save to database:', saveError);
             // Continue with extraction results even if save fails
@@ -110,11 +105,10 @@ export const uploadAndExtractPDF = async (req, res) => {
         setTimeout(async () => {
           try {
             await fs.unlink(filePath);
-            console.log('🗑️ Cleaned up uploaded file');
           } catch (cleanupError) {
             console.warn('⚠️ Failed to cleanup file:', cleanupError);
           }
-        }, 5000); // 5 second delay to ensure response is sent
+        }, 5000);
 
         // Send successful response
         res.status(200).json({

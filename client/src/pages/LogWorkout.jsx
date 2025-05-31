@@ -4,6 +4,7 @@ import Card from '../components/Card';
 import Button from '../components/Button';
 import { FaDumbbell, FaFire, FaPlus, FaTimes } from 'react-icons/fa';
 import Skeleton from '../components/Skeleton';
+import { workoutApi } from '../services/api';
 
 const workoutTypes = [
   'entrainement', 'musculation', 'cardio', 'yoga', 'course', 'autre'
@@ -41,19 +42,59 @@ function LogWorkout() {
     setExerciseList(list => list.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e && e.preventDefault();
     if (!date || !duration || !calories || !type) {
-      setError('Veuillez remplir tous les champs essentiels');
+      if (typeof setError === 'function') setError('Veuillez remplir tous les champs essentiels: Date, Durée, Calories et Type.');
+      if (typeof addToast === 'function') {
+        addToast({ title: 'Erreur de validation', message: 'Veuillez remplir tous les champs essentiels: Date, Durée, Calories et Type.', type: 'error' });
+      }
       return;
     }
     setLoading(true);
-    setTimeout(() => {
+    if (typeof setError === 'function') setError('');
+    if (typeof setSuccess === 'function') setSuccess('');
+
+    const workoutData = {
+      date,
+      duration: parseInt(duration, 10),
+      calories: parseInt(calories, 10),
+      type,
+      difficulty: parseInt(difficulty, 10),
+      enjoyment: parseInt(enjoyment, 10),
+      notes,
+      exercises: exerciseList.map(ex => ({
+        name: ex.name,
+        sets: ex.sets ? parseInt(ex.sets, 10) : undefined,
+        reps: ex.reps ? parseInt(ex.reps, 10) : undefined,
+        weight: ex.weight ? parseFloat(ex.weight) : undefined,
+      }))
+    };
+
+    try {
+      const response = await workoutApi.createWorkout(workoutData);
       setLoading(false);
-      setSuccess('Entraînement enregistré !');
-      addToast({ title: 'Succès', message: 'Entraînement enregistré.', type: 'success' });
-      setError('');
-    }, 800);
+      if (response && response.data && response.data._id) {
+        if (typeof setSuccess === 'function') setSuccess('Entraînement enregistré avec succès !');
+        if (typeof addToast === 'function') {
+          addToast({ title: 'Succès!', message: 'Votre entraînement a été enregistré.', type: 'success' });
+        }
+      } else {
+        console.error("API response missing expected data:", response);
+        if (typeof setError === 'function') setError('Erreur lors de l\'enregistrement. Réponse API inattendue.');
+        if (typeof addToast === 'function') {
+          addToast({ title: 'Erreur Inattendue', message: 'Réponse inattendue du serveur. Veuillez réessayer.', type: 'error' });
+        }
+      }
+    } catch (err) {
+      setLoading(false);
+      const errorMessage = err.response?.data?.message || err.message || 'Une erreur est survenue.';
+      if (typeof setError === 'function') setError(`Erreur: ${errorMessage}`);
+      if (typeof addToast === 'function') {
+        addToast({ title: 'Échec de l\'enregistrement', message: errorMessage, type: 'error' });
+      }
+      console.error("Failed to log workout:", err);
+    }
   };
 
   return (

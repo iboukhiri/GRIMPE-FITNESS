@@ -22,7 +22,6 @@ const cleanupDemoData = () => {
   // Remove any demo-related data
   localStorage.removeItem('authDemoMode');
   localStorage.removeItem('useDemoData');
-  console.log('✅ Demo data cleaned up');
 };
 
 // MainLayout with auth integration

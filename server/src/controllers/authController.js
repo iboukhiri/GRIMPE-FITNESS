@@ -168,11 +168,60 @@ export const logout = async (req, res) => {
 // Update user profile
 export const updateProfile = async (req, res) => {
   try {
-    const { name, username } = req.body;
+    const { name, username, email, currentPassword, newPassword } = req.body;
     const userId = req.user._id;
 
-    // Check if username is already taken (if provided and different)
+    // Handle password change if provided
+    if (currentPassword && newPassword) {
+      // Get the current user with password to verify current password
+      const currentUser = await User.findById(userId);
+      if (!currentUser) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found.'
+        });
+      }
+
+      // Verify current password
+      const isCurrentPasswordValid = await currentUser.isValidPassword(currentPassword);
+      if (!isCurrentPasswordValid) {
+        return res.status(400).json({
+          success: false,
+          message: 'Current password is incorrect.'
+        });
+      }
+
+      // Validate new password
+      if (newPassword.length < 6) {
+        return res.status(400).json({
+          success: false,
+          message: 'New password must be at least 6 characters long.'
+        });
+      }
+
+      // Update the password (will be hashed by the pre-save middleware)
+      currentUser.password = newPassword;
+      await currentUser.save();
+
+      return res.status(200).json({
+        success: true,
+        message: 'Password updated successfully.',
+        user: {
+          id: currentUser._id,
+          username: currentUser.username,
+          email: currentUser.email,
+          name: currentUser.name,
+          preferences: currentUser.preferences
+        }
+      });
+    }
+
+    // Handle regular profile updates (non-password)
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
     if (username && username !== req.user.username) {
+      // Check if username is already taken
       const existingUser = await User.findOne({ username });
       if (existingUser) {
         return res.status(400).json({
@@ -180,11 +229,12 @@ export const updateProfile = async (req, res) => {
           message: 'Username is already taken.'
         });
       }
+      updateData.username = username;
     }
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { ...(name && { name }), ...(username && { username }) },
+      updateData,
       { new: true, runValidators: true }
     ).select('-password');
 

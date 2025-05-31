@@ -67,47 +67,70 @@ function Progress() {
     const fetchProgressData = async () => {
       setLoading(true);
       setError(null);
-      
-      try {
-        console.log('Récupération des données de progression pour la période:', filter);
+
+      // Helper function to calculate previous period's date range
+      const calculatePreviousPeriodDateRange = (currentFilter) => {
+        const now = new Date();
+        let startDate = new Date(now);
+        let endDate = new Date(now); // End date of the previous period is start date of current period (exclusive)
+
+        // Set end of current period to today, start of current period based on filter
+        // Then calculate previous period relative to that
         
-        // Calculate previous period dates for comparison
-        const getPreviousPeriodDates = (currentFilter) => {
-          const now = new Date();
-          let periodDays;
-          
-          switch (currentFilter) {
-            case '1week':
-              periodDays = 7;
-              break;
-            case '1month':
-              periodDays = 30;
-              break;
-            case '3months':
-              periodDays = 90;
-              break;
-            case '6months':
-              periodDays = 180;
-              break;
-            case '1year':
-              periodDays = 365;
-              break;
-            default:
-              periodDays = 7; // default to week
-          }
-          
-          const currentStart = new Date(now.getTime() - periodDays * 24 * 60 * 60 * 1000);
-          const previousStart = new Date(currentStart.getTime() - periodDays * 24 * 60 * 60 * 1000);
-          const previousEnd = currentStart;
-          
-          return {
-            startDate: previousStart.toISOString(),
-            endDate: previousEnd.toISOString()
-          };
+        let currentPeriodStartDate = new Date(now);
+
+        switch (currentFilter) {
+          case '1week':
+            currentPeriodStartDate.setDate(now.getDate() - 7);
+            endDate = new Date(currentPeriodStartDate); // End of prev period is start of current
+            startDate = new Date(currentPeriodStartDate);
+            startDate.setDate(currentPeriodStartDate.getDate() - 7);
+            break;
+          case '1month':
+            currentPeriodStartDate.setMonth(now.getMonth() - 1);
+            endDate = new Date(currentPeriodStartDate);
+            startDate = new Date(currentPeriodStartDate);
+            startDate.setMonth(currentPeriodStartDate.getMonth() - 1);
+            break;
+          case '3months':
+            currentPeriodStartDate.setMonth(now.getMonth() - 3);
+            endDate = new Date(currentPeriodStartDate);
+            startDate = new Date(currentPeriodStartDate);
+            startDate.setMonth(currentPeriodStartDate.getMonth() - 3);
+            break;
+          case '6months':
+            currentPeriodStartDate.setMonth(now.getMonth() - 6);
+            endDate = new Date(currentPeriodStartDate);
+            startDate = new Date(currentPeriodStartDate);
+            startDate.setMonth(currentPeriodStartDate.getMonth() - 6);
+            break;
+          case '1year':
+            currentPeriodStartDate.setFullYear(now.getFullYear() - 1);
+            endDate = new Date(currentPeriodStartDate);
+            startDate = new Date(currentPeriodStartDate);
+            startDate.setFullYear(currentPeriodStartDate.getFullYear() - 1);
+            break;
+          default: // Default to 1 week if filter is unknown or 'all' (comparison for 'all' might not be meaningful)
+            currentPeriodStartDate.setDate(now.getDate() - 7);
+            endDate = new Date(currentPeriodStartDate);
+            startDate = new Date(currentPeriodStartDate);
+            startDate.setDate(currentPeriodStartDate.getDate() - 7);
+            break;
+        }
+        
+        // We want just the date part, in YYYY-MM-DD format for the API
+        const formatDate = (date) => date.toISOString().split('T')[0];
+
+        return {
+          startDate: formatDate(startDate),
+          endDate: formatDate(endDate), // End date of previous period (exclusive for current)
         };
-        
-        const previousPeriod = getPreviousPeriodDates(filter);
-        
+      };
+
+      const previousPeriod = calculatePreviousPeriodDateRange(filter);
+
+      try {
+        // Fetch data based on current filter
         const [overview, trends, types, yearly, records, goals, previousTrends] = await Promise.all([
           workoutApi.getStatsOverview(),
           workoutApi.getStatsTrends({ period: filter }),
@@ -122,8 +145,6 @@ function Progress() {
             endDate: previousPeriod.endDate
           }).catch(() => [])
         ]);
-        
-        console.log('Réponses API progression:', { overview, trends, types, yearly, records, goals, previousTrends });
         
         // Calculate percentage changes
         const calculatePercentageChange = (current, previous) => {
@@ -190,7 +211,6 @@ function Progress() {
         });
         
       } catch (err) {
-        console.error('Erreur lors de la récupération des données de progression:', err);
         setError(err.message || 'Erreur lors du chargement des données');
         
         // Set default empty data
