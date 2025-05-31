@@ -178,7 +178,7 @@ function MainLayout({ children, darkMode, toggleDarkMode }) {
                       <button
                         onClick={() => {
                           setProfileMenuOpen(false);
-                          // Navigate to settings
+                          navigate('/settings');
                         }}
                         className="flex items-center space-x-3 w-full p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       >

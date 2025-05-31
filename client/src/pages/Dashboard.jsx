@@ -320,7 +320,34 @@ function Dashboard() {
   
   // Export data function
   const exportData = async (format) => {
+    console.log('🚀 exportData function called with format:', format);
+    
     try {
+      // Simple test first
+      if (format === 'pdf') {
+        console.log('📄 PDF format detected');
+        
+        // Test PDF generation without data first
+        const testDoc = new jsPDF();
+        testDoc.text('Test PDF', 20, 20);
+        console.log('📄 jsPDF object created successfully');
+        
+        // Test save function
+        try {
+          testDoc.save('test.pdf');
+          console.log('✅ Basic PDF save test successful');
+        } catch (saveError) {
+          console.error('❌ PDF save test failed:', saveError);
+          addToast({
+            title: '❌ Erreur PDF',
+            message: 'Erreur lors de la sauvegarde du PDF: ' + saveError.message,
+            type: 'error',
+            duration: 5000
+          });
+          return;
+        }
+      }
+      
       // Fetch fresh workout data for export
       setPdfLoading(true);
       console.log('Récupération des données pour export PDF...');

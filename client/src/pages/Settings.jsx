@@ -44,9 +44,27 @@ function Settings() {
 
     setLoading(true);
     try {
-      await updateProfile({ name, email });
+      const result = await updateProfile({ name, email });
+      if (result.success) {
+        addToast({
+          type: 'success',
+          message: result.message || 'Profil mis à jour avec succès !',
+          duration: 4000
+        });
+      } else {
+        addToast({
+          type: 'error',
+          message: result.message || 'Erreur lors de la mise à jour du profil.',
+          duration: 4000
+        });
+      }
     } catch (error) {
       console.error('Error updating profile:', error);
+      addToast({
+        type: 'error',
+        message: 'Une erreur est survenue lors de la mise à jour du profil.',
+        duration: 4000
+      });
     } finally {
       setLoading(false);
     }
@@ -70,19 +88,45 @@ function Settings() {
       });
       return;
     }
+    if (newPassword.length < 6) {
+      addToast({
+        type: 'error',
+        message: 'Le nouveau mot de passe doit contenir au moins 6 caractères.',
+        duration: 3000
+      });
+      return;
+    }
 
     setPasswordLoading(true);
     try {
-      await updateProfile({
+      const result = await updateProfile({
         currentPassword,
         newPassword
       });
       
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmNewPassword('');
+      if (result.success) {
+        addToast({
+          type: 'success',
+          message: result.message || 'Mot de passe changé avec succès !',
+          duration: 4000
+        });
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmNewPassword('');
+      } else {
+        addToast({
+          type: 'error',
+          message: result.message || 'Erreur lors du changement de mot de passe.',
+          duration: 4000
+        });
+      }
     } catch (error) {
       console.error('Error changing password:', error);
+      addToast({
+        type: 'error',
+        message: 'Une erreur est survenue lors du changement de mot de passe.',
+        duration: 4000
+      });
     } finally {
       setPasswordLoading(false);
     }
