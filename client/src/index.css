@@ -1,0 +1,495 @@
+/* Import Google Fonts for motivational typography */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800;900&family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Animations */
+@layer utilities {
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-5px);
+    }
+    75% {
+      transform: translateX(5px);
+    }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.7s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .animate-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+}
+
+:root {
+  /* Light mode colors - Original vibrant version */
+  --color-primary-100: #ffefe3;
+  --color-primary-200: #ffddc1;
+  --color-primary-600: #ff6b35;  /* Original bright orange */
+  --color-primary-700: #e55a2b;
+  --color-primary-900: #b23c1a;
+  --color-secondary-200: #ffc9cc;
+  --color-secondary-300: #ffa3a8;
+  --color-secondary-500: #ff4351;
+  --color-secondary-600: #e63946;  /* Original bright red */
+  --color-secondary-700: #d2252f;
+  --color-secondary-800: #b01e27;
+  --color-secondary-900: #951e25;
+  --color-motivational-energy: #ff6b35;     /* Original vibrant orange */
+  --color-motivational-passion: #e63946;    /* Original vibrant red */
+  --color-motivational-power: #ff4d6d;      /* Bright pink-red */
+  --color-motivational-focus: #ffab00;      /* Bright gold */
+  --color-motivational-success: #00c851;    /* Bright green */
+  --color-motivational-determination: #263238;
+  
+  /* Enhanced dark mode colors for better contrast */
+  --dark-bg-primary: #0f1419;      /* Deeper dark blue-gray */
+  --dark-bg-secondary: #1a202c;    /* Rich dark gray */
+  --dark-bg-tertiary: #2d3748;     /* Medium gray */
+  --dark-surface: #374151;         /* Card backgrounds */
+  --dark-surface-hover: #4b5563;   /* Interactive surfaces */
+  --dark-border: #4b5563;          /* Borders */
+  --dark-border-light: #6b7280;    /* Lighter borders */
+  --dark-text-primary: #ffffff;    /* Pure white for high contrast */
+  --dark-text-secondary: #f3f4f6;  /* Near white for secondary text */
+  --dark-text-muted: #d1d5db;      /* Light gray for muted text */
+  --dark-accent-orange: #ff8c42;   /* Brighter orange for dark mode */
+  --dark-accent-red: #ff5d6b;      /* Brighter red for dark mode */
+  --dark-accent-green: #34d399;    /* Brighter green for dark mode */
+  --dark-accent-blue: #60a5fa;     /* Brighter blue for dark mode */
+  
+  /* Enhanced vibrant gradients */
+  --gradient-motivational: linear-gradient(135deg, #ff6b35 0%, #e63946 35%, #ff4d6d 70%, #ffab00 100%);
+  --gradient-energy: linear-gradient(135deg, #ff6b35 0%, #ff4d6d 100%);
+  --gradient-passion: linear-gradient(135deg, #e63946 0%, #ff6b35 100%);
+  --gradient-success: linear-gradient(135deg, #00c851 0%, #00ff41 100%);
+  
+  /* Enhanced dark mode gradients */
+  --gradient-dark-bg: linear-gradient(135deg, #0f1419 0%, #1a202c 25%, #2d3748 75%, #374151 100%);
+  --gradient-dark-surface: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+  --gradient-dark-card: linear-gradient(145deg, #1f2937 0%, #111827 100%);
+  
+  /* Enhanced shadow variables with reduced intensity for better eye comfort */
+  --shadow-motivational: 0 8px 20px -5px rgba(255, 107, 53, 0.2);
+  --shadow-energy: 0 6px 20px rgba(255, 107, 53, 0.25);
+  --shadow-passion: 0 6px 20px rgba(230, 57, 70, 0.25);
+  --shadow-glow: 0 0 15px rgba(255, 107, 53, 0.3);
+  --shadow-dark: 0 8px 20px -5px rgba(0, 0, 0, 0.4);
+  --shadow-dark-glow: 0 0 15px rgba(255, 140, 66, 0.15);
+}
+
+/* Global styles with improved vibrant theme */
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Poppins', 'Inter', system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  background: linear-gradient(135deg, #fff8f1 0%, #ffefe3 50%, #ffddc1 100%);
+  color: #1f2937;
+  transition: all 0.3s ease;
+}
+
+.dark body {
+  background: var(--gradient-dark-bg);
+  color: var(--dark-text-primary);
+}
+
+/* Enhanced vibrant animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Utility classes */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.4s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Custom component styles with refined motivational theme */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-xl text-base font-semibold text-white transition-all duration-300 transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
+    background: var(--gradient-energy);
+    box-shadow: var(--shadow-energy);
+  }
+  
+  .btn-primary:hover {
+    box-shadow: var(--shadow-energy);
+    transform: translateY(-1px) scale(1.05);
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-xl text-base font-semibold text-white transition-all duration-300 transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500;
+    background: var(--gradient-passion);
+    box-shadow: var(--shadow-passion);
+  }
+  
+  .btn-secondary:hover {
+    box-shadow: var(--shadow-passion);
+    transform: translateY(-1px) scale(1.05);
+  }
+  
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-6 py-3 border-2 rounded-xl text-base font-semibold transition-all duration-300 transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
+    border-color: var(--color-motivational-energy);
+    color: var(--color-motivational-energy);
+    background: transparent;
+  }
+  
+  .btn-outline:hover {
+    background: var(--color-motivational-energy);
+    color: white;
+    box-shadow: var(--shadow-energy);
+    transform: translateY(-1px) scale(1.05);
+  }
+  
+  .card {
+    @apply p-6 bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl rounded-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 border border-white/10;
+    background: linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+  }
+  
+  .dark .card {
+    background: var(--gradient-dark-card);
+    border-color: var(--dark-border);
+    color: var(--dark-text-primary);
+    box-shadow: var(--shadow-dark);
+  }
+  
+  .form-input {
+    @apply block w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 min-h-[48px] shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 placeholder-gray-400 dark:placeholder-gray-500 transition-all duration-300;
+  }
+  
+  .form-input:focus {
+    border-color: var(--color-motivational-energy);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+    transform: scale(1.01);
+  }
+  
+  .form-label {
+    @apply block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2;
+  }
+  
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
+  }
+  
+  .badge-primary {
+    background: var(--gradient-energy);
+    color: white;
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2);
+  }
+  
+  .badge-success {
+    background: var(--gradient-success);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 200, 81, 0.2);
+  }
+  
+  .navbar {
+    @apply bg-white dark:bg-gray-800 shadow-lg flex items-center justify-between px-4 py-2;
+  }
+  
+  .navbar-link {
+    @apply text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 rounded-xl transition-all duration-300 font-medium transform hover:scale-110;
+  }
+  
+  .navbar-brand {
+    @apply text-primary-700 dark:text-primary-400 font-bold text-xl hover:text-primary-800 dark:hover:text-primary-300 transition-all duration-300 transform hover:scale-110;
+    background: linear-gradient(135deg, var(--color-motivational-energy) 0%, var(--color-motivational-focus) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Motivational text styles */
+  .text-motivational {
+    @apply font-semibold tracking-wide;
+    background: var(--gradient-motivational);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .text-energy {
+    color: var(--color-motivational-energy);
+    font-weight: 600;
+  }
+  
+  .text-passion {
+    color: var(--color-motivational-passion);
+    font-weight: 600;
+  }
+  
+  .text-success {
+    color: var(--color-motivational-success);
+    font-weight: 600;
+  }
+}
+
+/* Enhanced animations with more intensity */
+@layer utilities {
+  @keyframes motivationalPulse {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 0 8px rgba(255, 107, 53, 0.2);
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 0 12px rgba(255, 107, 53, 0.3);
+    }
+  }
+  
+  @keyframes energyGlow {
+    0% {
+      box-shadow: 0 0 8px rgba(255, 107, 53, 0.2);
+      filter: brightness(1);
+    }
+    100% {
+      box-shadow: 0 0 15px rgba(255, 107, 53, 0.4);
+      filter: brightness(1.05);
+    }
+  }
+  
+  @keyframes bounceMotivational {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    25% {
+      transform: translateY(-5px);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+    75% {
+      transform: translateY(-3px);
+    }
+  }
+  
+  .animate-motivational-pulse {
+    animation: motivationalPulse 1.8s infinite;
+  }
+  
+  .animate-energy-glow {
+    animation: energyGlow 2s infinite alternate;
+  }
+  
+  .animate-bounce-motivational {
+    animation: bounceMotivational 1.5s infinite;
+  }
+  
+  /* Utility classes for vibrant effects */
+  .bg-motivational-gradient {
+    background: var(--gradient-motivational);
+  }
+  
+  .bg-energy-gradient {
+    background: var(--gradient-energy);
+  }
+  
+  .bg-passion-gradient {
+    background: var(--gradient-passion);
+  }
+  
+  .bg-success-gradient {
+    background: var(--gradient-success);
+  }
+  
+  .shadow-motivational {
+    box-shadow: var(--shadow-motivational);
+  }
+  
+  .shadow-energy {
+    box-shadow: var(--shadow-energy);
+  }
+  
+  .shadow-passion {
+    box-shadow: var(--shadow-passion);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  }
+  
+/* Custom scrollbar with vibrant colors */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gradient-energy);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-motivational-passion);
+}
+
+/* Focus states for accessibility */
+*:focus {
+  outline: none;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-motivational-energy);
+  outline-offset: 2px;
+}
+
+/* Dark mode enhancements */
+.dark .form-input {
+  background-color: var(--dark-surface);
+  border-color: var(--dark-border);
+  color: var(--dark-text-primary);
+}
+
+.dark .form-input:focus {
+  border-color: var(--dark-accent-orange);
+  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.2);
+}
+
+.dark .navbar {
+  background-color: var(--dark-bg-secondary);
+  border-bottom: 1px solid var(--dark-border);
+}
+
+.dark .navbar-link:hover {
+  color: var(--dark-accent-orange);
+}
+
+.dark .navbar-brand {
+  background: linear-gradient(135deg, var(--dark-accent-orange) 0%, var(--color-motivational-focus) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Dark mode text colors */
+.dark .text-energy {
+  color: var(--dark-accent-orange);
+}
+
+.dark .text-passion {
+  color: var(--dark-accent-red);
+}
+
+.dark .text-success {
+  color: var(--dark-accent-green);
+}
+
+.dark .text-motivational {
+  background: linear-gradient(135deg, var(--dark-accent-orange) 0%, var(--dark-accent-red) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* High contrast text for dark mode */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: var(--dark-text-primary);
+}
+
+.dark p {
+  color: var(--dark-text-secondary);
+}
+
+.dark .text-gray-600 {
+  color: var(--dark-text-muted) !important;
+}
+
+.dark .text-gray-700 {
+  color: var(--dark-text-secondary) !important;
+}
+
+.dark .text-gray-800 {
+  color: var(--dark-text-primary) !important;
+}
+
+.dark .text-gray-900 {
+  color: var(--dark-text-primary) !important;
+}
