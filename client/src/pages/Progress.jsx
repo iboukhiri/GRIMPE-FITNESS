@@ -7,7 +7,9 @@ import {
   FaRunning, 
   FaDumbbell, 
   FaCalendarAlt,
-  FaClock
+  FaClock,
+  FaEye,
+  FaEyeSlash
 } from 'react-icons/fa';
 import { ThemeContext } from '../App';
 import { 
@@ -34,6 +36,241 @@ import Badge from '../components/Badge';
 import StatsSummary from '../components/StatsSummary';
 import { workoutApi } from '../services/api';
 import Skeleton from '../components/Skeleton';
+
+// Enhanced Modern Pie Chart Component for Progress page
+const ModernPieChart = ({ data, hiddenItems, onToggleItem, darkMode }) => {
+  const [hoveredIndex, setHoveredIndex] = useState(-1);
+
+  const visibleData = data.filter((_, i) => !hiddenItems.includes(i));
+  const total = visibleData.reduce((sum, item) => sum + item.value || item.count, 0);
+
+  // Enhanced tooltip content
+  const renderTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length > 0) {
+      const data = payload[0].payload;
+      const percentage = total > 0 ? ((data.value / total) * 100).toFixed(1) : 0;
+      
+      return (
+        <div className={`px-4 py-3 rounded-lg border shadow-lg transform transition-all duration-200 ${
+          darkMode 
+            ? 'bg-slate-800/95 border-slate-600 text-white' 
+            : 'bg-white/95 border-gray-300 text-gray-900'
+        }`}>
+          <div className="flex items-center gap-3 mb-2">
+            <div 
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: data.color }}
+            />
+            <p className="font-semibold text-sm">
+              {data.displayName || data.name}
+            </p>
+          </div>
+          <div className="space-y-1 text-xs">
+            <p className="flex justify-between gap-4">
+              <span className={darkMode ? 'text-slate-300' : 'text-gray-600'}>Séances:</span>
+              <span className="font-medium">{data.value}</span>
+            </p>
+            <p className="flex justify-between gap-4">
+              <span className={darkMode ? 'text-slate-300' : 'text-gray-600'}>Pourcentage:</span>
+              <span className="font-medium">{percentage}%</span>
+            </p>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // Enhanced label rendering
+  const renderLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+    if (percent < 0.05) return null; // Don't show labels for segments less than 5%
+    
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text 
+        x={x} 
+        y={y} 
+        fill={darkMode ? '#f8fafc' : '#1e293b'}
+        textAnchor={x > cx ? 'start' : 'end'} 
+        dominantBaseline="central"
+        className="text-xs font-bold"
+        style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
+
+  return (
+    <div className="flex flex-col h-full w-full">
+      {/* Pie Chart Container with better sizing */}
+      <div className="relative flex-1 min-h-0 px-2 py-2">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+            <Pie
+              data={visibleData.map((type, index) => ({
+                ...type,
+                value: type.value || type.count,
+                displayName: type.displayName || type.name,
+                originalIndex: data.findIndex(d => d._id === type._id || d.name === type.name)
+              }))}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={renderLabel}
+              outerRadius={70}
+              innerRadius={25}
+              paddingAngle={2}
+              dataKey="value"
+              onMouseEnter={(_, index) => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(-1)}
+              isAnimationActive={true}
+              animationBegin={0}
+              animationDuration={1200}
+              animationEasing="ease-out"
+            >
+              {visibleData.map((entry, index) => {
+                const isHovered = hoveredIndex === index;
+                
+                return (
+                  <Cell 
+                    key={`cell-${index}`}
+                    fill={entry.color}
+                    stroke={darkMode ? "#1e293b" : "#ffffff"}
+                    strokeWidth={isHovered ? 3 : 2}
+                    style={{
+                      filter: isHovered 
+                        ? 'drop-shadow(0 4px 12px rgba(0,0,0,0.3)) brightness(1.1)' 
+                        : 'drop-shadow(0 2px 6px rgba(0,0,0,0.15))',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      transformOrigin: 'center'
+                    }}
+                  />
+                );
+              })}
+            </Pie>
+            <Tooltip content={renderTooltip} />
+          </PieChart>
+        </ResponsiveContainer>
+
+        {/* Smaller center statistics */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className={`text-center p-2 rounded-full border ${
+            darkMode 
+              ? 'border-slate-500 bg-slate-800/80' 
+              : 'border-gray-400 bg-white/80'
+          } shadow-md backdrop-blur-sm`}>
+            <div className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              {total}
+            </div>
+            <div className={`text-[10px] font-medium uppercase tracking-wide ${
+              darkMode ? 'text-slate-400' : 'text-gray-500'
+            }`}>
+              Total
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Simplified compact legend */}
+      <div className="mt-2 px-2">
+        <h4 className={`text-sm font-semibold mb-3 ${
+          darkMode ? 'text-slate-300' : 'text-slate-600'
+        }`}>
+          Types d'Entraînement
+        </h4>
+        <div className="max-h-28 overflow-y-auto space-y-1">
+          {data.map((type, i) => {
+            const isHidden = hiddenItems.includes(i);
+            const value = type.value || type.count;
+            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+            
+            return (
+              <div
+                key={type._id || type.name}
+                className={`flex items-center justify-between p-2 rounded-md transition-all duration-200 ${
+                  isHidden 
+                    ? `opacity-40 ${darkMode ? 'bg-slate-700/20' : 'bg-gray-100/50'}` 
+                    : `opacity-100 ${darkMode ? 'bg-slate-700/30 hover:bg-slate-700/50' : 'bg-gray-50 hover:bg-gray-100'}`
+                }`}
+              >
+                <div className="flex items-center gap-3 flex-1">
+                  <button
+                    onClick={() => onToggleItem(i)}
+                    className="flex items-center gap-2 hover:scale-105 transition-transform duration-200"
+                    type="button"
+                  >
+                    <div className="relative">
+                      <div 
+                        className={`w-3 h-3 rounded-full ${isHidden ? 'opacity-50' : 'opacity-100'}`}
+                        style={{ backgroundColor: type.color }}
+                      />
+                      {isHidden && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <FaEyeSlash className="w-2 h-2 text-white" />
+                        </div>
+                      )}
+                    </div>
+                    {isHidden ? (
+                      <FaEyeSlash className={`w-3 h-3 ${darkMode ? 'text-slate-500' : 'text-gray-400'}`} />
+                    ) : (
+                      <FaEye className={`w-3 h-3 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
+                    )}
+                  </button>
+                  
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className={`text-sm font-medium ${
+                        isHidden 
+                          ? darkMode ? 'text-slate-500' : 'text-gray-400'
+                          : darkMode ? 'text-slate-200' : 'text-slate-700'
+                      }`}>
+                        {type.displayName || type.name}
+                      </span>
+                      <span className={`text-sm font-semibold ${
+                        isHidden 
+                          ? darkMode ? 'text-slate-500' : 'text-gray-400'
+                          : darkMode ? 'text-slate-300' : 'text-slate-600'
+                      }`}>
+                        {isHidden ? '—' : `${percentage}%`}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className={`text-xs ${
+                        isHidden 
+                          ? darkMode ? 'text-slate-600' : 'text-gray-400'
+                          : darkMode ? 'text-slate-400' : 'text-slate-500'
+                      }`}>
+                        {value} séances
+                      </span>
+                      {!isHidden && (
+                        <div className={`h-1 rounded-full ${darkMode ? 'bg-slate-600' : 'bg-gray-200'} flex-1 mx-2 max-w-16`}>
+                          <div 
+                            className="h-1 rounded-full transition-all duration-300"
+                            style={{ 
+                              width: `${percentage}%`, 
+                              backgroundColor: type.color,
+                              maxWidth: '100%'
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function Progress() {
   const { darkMode } = useContext(ThemeContext);
@@ -561,101 +798,43 @@ function Progress() {
               </div>
               <div className="h-80">
                 {loading ? (
-                  <Skeleton variant="rect" height="100%" width="100%" />
-                ) : error ? (
-                  <div className="text-red-500 p-4 text-center">
-                    <p className="font-semibold">⚠️ Graphique indisponible</p>
-                    <p className="text-sm">{error}</p>
+                  <div className="flex items-center justify-center h-full">
+                    <div className="space-y-4 text-center">
+                      <div className={`w-32 h-32 rounded-full border-4 border-dashed animate-spin ${
+                        darkMode ? 'border-slate-600' : 'border-gray-300'
+                      }`}></div>
+                      <p className={darkMode ? 'text-slate-400' : 'text-slate-600'}>
+                        Chargement des données...
+                      </p>
+                    </div>
                   </div>
+                ) : error ? (
+                  <div className="text-red-500 p-4">{error}</div>
                 ) : typesData.length === 0 ? (
-                  <div className={`text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'} flex items-center justify-center h-full`}>
+                  <div className={`text-center flex flex-col items-center justify-center h-full space-y-4 ${
+                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
+                    <div className="text-6xl">📊</div>
                     <div>
-                      <div className="mb-4">
-                        <span className="text-4xl">🎯</span>
-                      </div>
-                      <p className="font-semibold text-lg mb-2">Variez Vos Entraînements !</p>
-                      <p className="text-sm">Un entraînement diversifié donne des résultats diversifiés</p>
+                      <p className="text-lg font-medium">Aucune donnée disponible</p>
+                      <p className="text-sm">Commencez à enregistrer vos entraînements pour voir la répartition</p>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col h-full">
-                    <ResponsiveContainer width="100%" height="65%">
-                      <PieChart>
-                        <Pie
-                          data={typesData.filter((_, i) => !hiddenPie.includes(i)).map(type => ({
-                            name: type._id,
-                            displayName: getTypeDisplayName(type._id),
-                            value: type.count,
-                            color: getTypeColor(type._id),
-                          }))}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={80}
-                          innerRadius={30}
-                          paddingAngle={5}
-                          dataKey="value"
-                          labelLine={false}
-                          label={({ name, percent }) => 
-                            <span className={`font-bold text-xs ${
-                              darkMode ? 'fill-slate-200' : 'fill-slate-800'
-                            }`} style={{ fill: darkMode ? '#f1f5f9' : '#1e293b' }}>
-                              {getTypeDisplayName(name)} {(percent * 100).toFixed(0)}%
-                            </span>
-                          }
-                          isAnimationActive={true}
-                          animationDuration={1200}
-                        >
-                          {typesData.map((type, index) =>
-                            hiddenPie.includes(index) ? null : (
-                              <Cell 
-                                key={`cell-${index}`} 
-                                fill={getTypeColor(type._id)}
-                                stroke={darkMode ? "#1e293b" : "#fff"} 
-                                strokeWidth={2}
-                                style={{
-                                  filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))',
-                                  transition: 'all 0.3s ease'
-                                }}
-                              />
-                            )
-                          )}
-                        </Pie>
-                        <Tooltip content={pieChartTooltip} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                    
-                    {/* Enhanced Legend with proper spacing */}
-                    <div className="flex flex-wrap justify-center gap-2 mt-4 px-2">
-                      {typesData.map((type, i) => {
-                        const isHidden = hiddenPie.includes(i);
-                        return (
-                          <button
-                            key={type._id}
-                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition-all duration-300 text-xs ${
-                              isHidden 
-                                ? `opacity-40 scale-90 ${darkMode ? 'bg-slate-700' : 'bg-gray-200'}` 
-                                : 'opacity-100 scale-100 hover:scale-105 shadow-sm'
-                            }`}
-                            style={{ 
-                              backgroundColor: isHidden ? undefined : `${getTypeColor(type._id)}20`,
-                              borderColor: getTypeColor(type._id),
-                              borderWidth: '1px'
-                            }}
-                            onClick={() => setHiddenPie(h => h.includes(i) ? h.filter(x => x !== i) : [...h, i])}
-                            type="button"
-                          >
-                            <span 
-                              className="inline-block w-2.5 h-2.5 rounded-full" 
-                              style={{ backgroundColor: getTypeColor(type._id) }}
-                            />
-                            <span className="font-medium" style={{ color: getTypeColor(type._id) }}>
-                              {getTypeDisplayName(type._id)}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                  <ModernPieChart 
+                    data={typesData.map(type => ({
+                      ...type,
+                      name: type._id,
+                      value: type.count,
+                      displayName: getTypeDisplayName(type._id),
+                      color: getTypeColor(type._id),
+                    }))}
+                    hiddenItems={hiddenPie}
+                    onToggleItem={(index) => setHiddenPie(prev => 
+                      prev.includes(index) ? prev.filter(x => x !== index) : [...prev, index]
+                    )}
+                    darkMode={darkMode}
+                  />
                 )}
               </div>
             </div>

@@ -125,7 +125,7 @@ function MainLayout({ children, darkMode, toggleDarkMode }) {
               {/* Dark mode toggle */}
               <button 
                 onClick={toggleDarkMode}
-                className="relative p-3 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white focus:outline-none shadow-md transform hover:scale-110 transition-all duration-300 focus:ring-2 focus:ring-orange-400 focus:ring-offset-2"
+                className="relative p-3 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-white focus:outline-none shadow-md transform hover:scale-110 transition-all duration-300 focus:ring-2 focus:ring-teal-400 focus:ring-offset-2"
                 aria-label="Basculer le mode sombre"
               >
                 <div className="relative z-10">
@@ -279,7 +279,7 @@ function MainLayout({ children, darkMode, toggleDarkMode }) {
                 <div className="mt-8 pt-6 border-t border-white/20 dark:border-gray-600/50">
                   <button
                     onClick={toggleDarkMode}
-                    className="flex items-center space-x-3 w-full p-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 dark:from-gray-700 dark:to-gray-600 hover:from-orange-400 hover:to-orange-500 dark:hover:from-orange-500 dark:hover:to-orange-400 text-white transition-all duration-300 shadow-md"
+                    className="flex items-center space-x-3 w-full p-3 rounded-xl bg-gradient-to-r from-teal-500 to-teal-600 dark:from-gray-700 dark:to-gray-600 hover:from-teal-400 hover:to-teal-500 dark:hover:from-teal-500 dark:hover:to-teal-400 text-white transition-all duration-300 shadow-md"
                   >
                     {darkMode ? <FaSun className="h-5 w-5" /> : <FaMoon className="h-5 w-5" />}
                     <span className="font-medium">
@@ -351,14 +351,21 @@ const MobileNavLink = ({ href, children, icon, onClick }) => (
 );
 
 // Auth layout for authentication pages (login/register)
-function AuthLayout({ children, darkMode, toggleDarkMode }) {
+function AuthLayout({ children, darkMode, toggleDarkMode, buttonColor = 'orange' }) {
+  const getButtonColors = () => {
+    if (buttonColor === 'teal') {
+      return 'bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 focus:ring-teal-400';
+    }
+    return 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 focus:ring-orange-400';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-light dark:bg-gradient-dark">
       {/* Dark mode toggle for auth pages */}
       <div className="absolute top-6 right-6 z-10">
         <button 
           onClick={toggleDarkMode}
-          className="relative p-3 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white focus:outline-none shadow-md transform hover:scale-110 transition-all duration-300 focus:ring-2 focus:ring-orange-400 focus:ring-offset-2"
+          className={`relative p-3 rounded-full ${getButtonColors()} text-white focus:outline-none shadow-md transform hover:scale-110 transition-all duration-300 focus:ring-2 focus:ring-offset-2`}
           aria-label="Basculer le mode sombre"
         >
           {darkMode ? <FaSun className="h-5 w-5" /> : <FaMoon className="h-5 w-5" />}
@@ -447,12 +454,12 @@ function App() {
             <Routes>
               {/* Auth routes */}
               <Route path="/login" element={
-                <AuthLayout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
+                <AuthLayout darkMode={darkMode} toggleDarkMode={toggleDarkMode} buttonColor="orange">
                   <Login />
                 </AuthLayout>
               } />
               <Route path="/register" element={
-                <AuthLayout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
+                <AuthLayout darkMode={darkMode} toggleDarkMode={toggleDarkMode} buttonColor="teal">
                   <Register />
                 </AuthLayout>
               } />
