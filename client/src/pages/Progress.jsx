@@ -674,13 +674,13 @@ function Progress() {
           <div className={`mb-8 p-6 rounded-xl text-white text-center animate-fade-in-scale ${
             darkMode 
               ? 'bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 border border-slate-600' 
-              : 'bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 shadow-lg'
+              : 'bg-gradient-to-r from-orange-400 via-orange-500 to-orange-400 shadow-lg'
           }`}>
             <p className="font-bold text-lg tracking-wide">
               "Les fondements de tout bonheur sont une bonne santé." – Leigh Hunt
             </p>
             <p className={`text-sm mt-2 font-medium ${
-              darkMode ? 'text-slate-300' : 'text-red-200'
+              darkMode ? 'text-slate-300' : 'text-orange-100'
             }`}>
               Continuez à construire vos fondations de force
             </p>
