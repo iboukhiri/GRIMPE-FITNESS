@@ -671,16 +671,16 @@ function Progress() {
         
         {/* Motivational Banner */}
         {!loading && !error && trendsData && trendsData.length > 0 && activeTab === 'overview' && (
-          <div className={`mb-8 p-6 rounded-xl text-white text-center animate-fade-in-scale ${
+          <div className={`mb-8 p-6 rounded-xl text-center animate-fade-in-scale ${
             darkMode 
-              ? 'bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 border border-slate-600' 
-              : 'bg-gradient-to-r from-orange-400 via-orange-500 to-orange-400 shadow-lg'
+              ? 'bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 border border-slate-600 text-white' 
+              : 'bg-gradient-to-r from-orange-100 via-orange-50 to-orange-100 shadow-lg text-slate-700 border border-orange-200'
           }`}>
             <p className="font-bold text-lg tracking-wide">
               "Les fondements de tout bonheur sont une bonne santé." – Leigh Hunt
             </p>
             <p className={`text-sm mt-2 font-medium ${
-              darkMode ? 'text-slate-300' : 'text-orange-100'
+              darkMode ? 'text-slate-300' : 'text-slate-600'
             }`}>
               Continuez à construire vos fondations de force
             </p>
