@@ -126,7 +126,7 @@ function Login() {
               <div className="flex items-center justify-center">
                 <div className="relative">
                   <FaMountain className="h-28 w-28 text-white animate-bounce-motivational" />
-                  <FaBolt className="absolute -top-4 -right-4 h-12 w-12 text-yellow-300 animate-pulse" />
+                  <FaBolt className="absolute -top-4 -right-4 h-12 w-12 text-yellow-300" />
                 </div>
               </div>
               <h1 className="text-6xl xl:text-8xl font-black text-white drop-shadow-2xl">
@@ -176,7 +176,7 @@ function Login() {
                 <FaMountain className={`h-16 w-16 transition-colors ${
                   darkMode ? 'text-orange-400' : 'text-orange-600'
                 } animate-bounce-motivational`} />
-                <FaBolt className="absolute -top-2 -right-2 h-6 w-6 text-yellow-500 animate-pulse" />
+                <FaBolt className="absolute -top-2 -right-2 h-6 w-6 text-yellow-500" />
               </div>
             </div>
             <h1 className={`text-4xl md:text-5xl font-black mb-4 transition-colors ${
