@@ -348,9 +348,14 @@ function Register() {
                       }`}
                       placeholder="Votre prénom"
                     />
-                    {touchedFields.firstName && !fieldErrors.firstName && formData.firstName && (
+                    {/* Validation Icons */}
+                    {touchedFields.firstName && (
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                        <FaCheckCircle className="h-5 w-5 text-green-500" />
+                        {fieldErrors.firstName || !formData.firstName ? (
+                          <FaTimesCircle className="h-5 w-5 text-red-500" />
+                        ) : (
+                          <FaCheckCircle className="h-5 w-5 text-green-500" />
+                        )}
                       </div>
                     )}
                   </div>
@@ -394,9 +399,14 @@ function Register() {
                       }`}
                       placeholder="Votre nom"
                     />
-                    {touchedFields.lastName && !fieldErrors.lastName && formData.lastName && (
+                    {/* Validation Icons */}
+                    {touchedFields.lastName && (
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                        <FaCheckCircle className="h-5 w-5 text-green-500" />
+                        {fieldErrors.lastName || !formData.lastName ? (
+                          <FaTimesCircle className="h-5 w-5 text-red-500" />
+                        ) : (
+                          <FaCheckCircle className="h-5 w-5 text-green-500" />
+                        )}
                       </div>
                     )}
                   </div>
@@ -441,9 +451,14 @@ function Register() {
                     }`}
                     placeholder="votre@email.com"
                   />
-                  {touchedFields.email && !fieldErrors.email && formData.email && (
+                  {/* Validation Icons */}
+                  {touchedFields.email && (
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                      <FaCheckCircle className="h-5 w-5 text-green-500" />
+                      {fieldErrors.email || !formData.email ? (
+                        <FaTimesCircle className="h-5 w-5 text-red-500" />
+                      ) : (
+                        <FaCheckCircle className="h-5 w-5 text-green-500" />
+                      )}
                     </div>
                   )}
                 </div>
@@ -502,6 +517,16 @@ function Register() {
                       }`} />
                     )}
                   </button>
+                  {/* Validation Icons for Password */}
+                  {touchedFields.password && (
+                    <div className="absolute inset-y-0 right-10 pr-3 flex items-center">
+                      {fieldErrors.password || !formData.password ? (
+                        <FaTimesCircle className="h-5 w-5 text-red-500" />
+                      ) : (
+                        <FaCheckCircle className="h-5 w-5 text-green-500" />
+                      )}
+                    </div>
+                  )}
                 </div>
                 
                 {/* Password Strength Indicator */}
@@ -579,9 +604,14 @@ function Register() {
                       }`} />
                     )}
                   </button>
-                  {touchedFields.confirmPassword && !fieldErrors.confirmPassword && formData.confirmPassword && formData.password === formData.confirmPassword && (
+                  {/* Validation Icons for Confirm Password */}
+                  {touchedFields.confirmPassword && (
                     <div className="absolute inset-y-0 right-10 pr-3 flex items-center">
-                      <FaCheckCircle className="h-5 w-5 text-green-500" />
+                      {fieldErrors.confirmPassword || !formData.confirmPassword || formData.password !== formData.confirmPassword ? (
+                        <FaTimesCircle className="h-5 w-5 text-red-500" />
+                      ) : (
+                        <FaCheckCircle className="h-5 w-5 text-green-500" />
+                      )}
                     </div>
                   )}
                 </div>
