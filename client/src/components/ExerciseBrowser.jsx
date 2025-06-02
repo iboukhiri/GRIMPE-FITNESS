@@ -1,5 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { FaFilter, FaSearch, FaDumbbell } from 'react-icons/fa';
+import { FaFilter } from 'react-icons/fa';
+import { FaSearch } from 'react-icons/fa';
+import { FaDumbbell } from 'react-icons/fa';
 import { ThemeContext } from '../App';
 import Button from './Button';
 import Badge from './Badge';

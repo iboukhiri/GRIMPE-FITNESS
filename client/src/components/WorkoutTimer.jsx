@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { ThemeContext } from '../App';
-import { FaPlay, FaPause, FaStop, FaRedo, FaHourglassHalf, FaDumbbell } from 'react-icons/fa';
+import { FaPlay } from 'react-icons/fa';
+import { FaPause } from 'react-icons/fa';
+import { FaStop } from 'react-icons/fa';
+import { FaRedo } from 'react-icons/fa';
+import { FaHourglassHalf } from 'react-icons/fa';
+import { FaDumbbell } from 'react-icons/fa';
 import Button from './Button';
 
 function WorkoutTimer({ 

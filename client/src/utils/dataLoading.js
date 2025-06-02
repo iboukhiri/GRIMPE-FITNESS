@@ -5,6 +5,23 @@
 import { createDemoData } from './demoData';
 import { workoutApi } from '../services/api';
 
+// Helper function to format duration intelligently
+const formatDuration = (durationInMinutes) => {
+  if (!durationInMinutes || durationInMinutes === 0) return '0 min';
+  
+  if (durationInMinutes < 60) {
+    return `${Math.round(durationInMinutes)} min`;
+  } else {
+    const hours = Math.floor(durationInMinutes / 60);
+    const minutes = Math.round(durationInMinutes % 60);
+    if (minutes === 0) {
+      return `${hours}h`;
+    } else {
+      return `${hours}h ${minutes}min`;
+    }
+  }
+};
+
 /**
  * Determines if an account appears to be new or has insufficient data
  * @param {Object} data The API response data
@@ -251,9 +268,8 @@ export const processRecordsData = (data) => {
   if (data.maxDuration) {
     records.push({
       exercise: 'Durée d\'entraînement',
-      value: data.maxDuration.duration,
-      previous: Math.round(data.maxDuration.duration * 0.85),
-      unit: 'min',
+      value: formatDuration(data.maxDuration.duration || 0),
+      previous: formatDuration(Math.round((data.maxDuration.duration || 0) * 0.85)),
       date: data.maxDuration.date
     });
   }

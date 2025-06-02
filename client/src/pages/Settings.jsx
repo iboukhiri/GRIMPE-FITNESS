@@ -1,5 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { FaCog, FaUser, FaLock, FaPalette, FaSave } from 'react-icons/fa';
+import { FaCog } from 'react-icons/fa';
+import { FaUser } from 'react-icons/fa';
+import { FaLock } from 'react-icons/fa';
+import { FaPalette } from 'react-icons/fa';
+import { FaSave } from 'react-icons/fa';
 import { ThemeContext } from '../App';
 import { useToast } from '../App';
 import { useAuth } from '../contexts/AuthContext';

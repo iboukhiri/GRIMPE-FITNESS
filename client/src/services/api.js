@@ -116,6 +116,18 @@ export const workoutApi = {
   },
   getStatsRecords: () => apiRequest('/workouts/stats/records'),
   getStatsGoals: () => apiRequest('/workouts/stats/goals'),
+  
+  // Goals management
+  getUserGoals: () => apiRequest('/users/goals'),
+  updateGoal: (goalId, goalData) => apiRequest(`/users/goals/${goalId}`, 'PUT', goalData),
+  createGoal: (goalData) => apiRequest('/users/goals', 'POST', goalData),
+  deleteGoal: (goalId) => apiRequest(`/users/goals/${goalId}`, 'DELETE'),
+  
+  // Body metrics
+  getBodyMetrics: () => apiRequest('/users/body-metrics'),
+  addBodyMetric: (metricData) => apiRequest('/users/body-metrics', 'POST', metricData),
+  updateBodyMetric: (metricId, metricData) => apiRequest(`/users/body-metrics/${metricId}`, 'PUT', metricData),
+  deleteBodyMetric: (metricId) => apiRequest(`/users/body-metrics/${metricId}`, 'DELETE'),
 };
 
 export default {

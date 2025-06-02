@@ -2,13 +2,40 @@ import React, { useState, useContext } from 'react';
 import { ThemeContext, useToast } from '../App';
 import Card from '../components/Card';
 import Button from '../components/Button';
-import { FaDumbbell, FaFire, FaPlus, FaTimes, FaStar, FaStarHalfAlt, FaClock, FaCalendarAlt, FaBurn, FaHeartbeat, FaEdit } from 'react-icons/fa';
+import { FaDumbbell } from 'react-icons/fa';
+import { FaFire } from 'react-icons/fa';
+import { FaPlus } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
+import { FaStar } from 'react-icons/fa';
+import { FaStarHalfAlt } from 'react-icons/fa';
+import { FaClock } from 'react-icons/fa';
+import { FaCalendarAlt } from 'react-icons/fa';
+import { FaBurn } from 'react-icons/fa';
+import { FaHeartbeat } from 'react-icons/fa';
+import { FaEdit } from 'react-icons/fa';
 import Skeleton from '../components/Skeleton';
 import { workoutApi } from '../services/api';
 
 const workoutTypes = [
   'entrainement', 'musculation', 'cardio', 'yoga', 'course', 'autre'
 ];
+
+// Helper function to format duration intelligently
+const formatDuration = (durationInMinutes) => {
+  if (!durationInMinutes || durationInMinutes === 0) return '0 min';
+  
+  if (durationInMinutes < 60) {
+    return `${Math.round(durationInMinutes)} min`;
+  } else {
+    const hours = Math.floor(durationInMinutes / 60);
+    const minutes = Math.round(durationInMinutes % 60);
+    if (minutes === 0) {
+      return `${hours}h`;
+    } else {
+      return `${hours}h ${minutes}min`;
+    }
+  }
+};
 
 // Star Rating Component
 const StarRating = ({ rating, onRatingChange, label, disabled = false }) => {
@@ -373,14 +400,16 @@ function LogWorkout() {
   };
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' : 'bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50'} py-8 px-4 sm:px-6 lg:px-8`}>
+    <div className={`min-h-screen ${darkMode ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-slate-900' : 'bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100'} py-8 px-4 sm:px-6 lg:px-8`}>
       <div className="w-full max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8">
-          <h1 className={`text-4xl sm:text-5xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-              Nouvel Entraînement
-            </span>
+          <h1 className={`text-4xl md:text-5xl lg:text-6xl font-black mb-6 transition-colors ${
+            darkMode 
+              ? 'text-transparent bg-gradient-to-r from-orange-400 via-red-400 to-pink-400 bg-clip-text' 
+              : 'text-transparent bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 bg-clip-text'
+          }`}>
+            Nouvel Entraînement
           </h1>
           <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
             Enregistrez votre séance et suivez vos progrès
@@ -687,7 +716,7 @@ function LogWorkout() {
                         <span className={`font-medium ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Durée</span>
                       </div>
                       <p className={`text-lg font-semibold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                        {duration ? `${duration} minutes` : 'Non définie'}
+                        {duration ? formatDuration(parseInt(duration)) : 'Non définie'}
                       </p>
                     </div>
 

@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
-import { FaSortAlphaDown, FaSortNumericDown, FaTimes, FaArrowsAlt, FaFilter, FaTh, FaList, FaStar } from 'react-icons/fa';
+import { FaSortAlphaDown } from 'react-icons/fa';
+import { FaSortNumericDown } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
+import { FaArrowsAlt } from 'react-icons/fa';
+import { FaFilter } from 'react-icons/fa';
+import { FaTh } from 'react-icons/fa';
+import { FaList } from 'react-icons/fa';
+import { FaStar } from 'react-icons/fa';
+import React, { useState, useContext } from 'react';
 import Skeleton from './Skeleton';
 
 /**

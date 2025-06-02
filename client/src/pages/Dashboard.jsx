@@ -1,5 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { FaDumbbell, FaFire, FaClock, FaTrophy, FaCalendarAlt, FaChartLine, FaMedal, FaCheck, FaFileDownload, FaFileCode, FaFilePdf, FaFileExcel, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaDumbbell } from 'react-icons/fa';
+import { FaFire } from 'react-icons/fa';
+import { FaClock } from 'react-icons/fa';
+import { FaTrophy } from 'react-icons/fa';
+import { FaCalendarAlt } from 'react-icons/fa';
+import { FaChartLine } from 'react-icons/fa';
+import { FaMedal } from 'react-icons/fa';
+import { FaCheck } from 'react-icons/fa';
+import { FaFileDownload } from 'react-icons/fa';
+import { FaFileCode } from 'react-icons/fa';
+import { FaFilePdf } from 'react-icons/fa';
+import { FaFileExcel } from 'react-icons/fa';
+import { FaLock } from 'react-icons/fa';
+import { FaEye } from 'react-icons/fa';
+import { FaEyeSlash } from 'react-icons/fa';
 import { ThemeContext } from '../App';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -270,6 +284,23 @@ function Dashboard() {
   const [hiddenPie, setHiddenPie] = useState([]);
   const [previousTrends, setPreviousTrends] = useState([]);
 
+  // Helper function to format duration intelligently
+  const formatDuration = (durationInMinutes) => {
+    if (!durationInMinutes || durationInMinutes === 0) return '0 min';
+    
+    if (durationInMinutes < 60) {
+      return `${Math.round(durationInMinutes)} min`;
+    } else {
+      const hours = Math.floor(durationInMinutes / 60);
+      const minutes = Math.round(durationInMinutes % 60);
+      if (minutes === 0) {
+        return `${hours}h`;
+      } else {
+        return `${hours}h ${minutes}min`;
+      }
+    }
+  };
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       setLoading(true);
@@ -426,7 +457,7 @@ function Dashboard() {
   // New data for workout goals and statistics
   const workoutGoals = [
     { id: 1, name: 'Séances par semaine', current: 4, target: 5, unit: '', color: '#4F46E5' },
-    { id: 2, name: 'Minutes par séance', current: 45, target: 60, unit: 'min', color: '#0EA5E9' },
+    { id: 2, name: 'Durée par séance', current: formatDuration(45), target: formatDuration(60), unit: '', color: '#0EA5E9' },
     { id: 3, name: 'Calories brûlées par semaine', current: 1200, target: 1500, unit: 'cal', color: '#EF4444' },
   ];
 
@@ -495,11 +526,11 @@ function Dashboard() {
       const workoutsResponse = await workoutApi.getWorkouts({ limit: 1000 });
       const workoutsForExport = workoutsResponse?.data || [];
       
-      // Check for minimal workout requirement (this toast is kept)
+      // Check for minimal workout requirement (this toast is kept but cleaned)
       if (workoutsForExport.length < 3) {
         if (typeof addToast === 'function') {
           addToast({
-            title: '⚠️ Données insuffisantes',
+            title: 'Données insuffisantes',
             message: `Vous avez ${workoutsForExport.length} entraînement(s). Pour un rapport détaillé, nous recommandons au moins 3 entraînements. Continuez à enregistrer vos séances !`,
             type: 'warning',
             duration: 6000
@@ -509,12 +540,12 @@ function Dashboard() {
         }
       }
       
-      // Provide guidance for users with few workouts (these toasts are kept)
+      // Provide guidance for users with few workouts (cleaned toasts)
       if (workoutsForExport.length >= 3 && workoutsForExport.length < 10) {
         if (typeof addToast === 'function') {
           addToast({
             title: 'Rapport généré avec données limitées',
-            message: `📊 Votre rapport contient ${workoutsForExport.length} entraînement(s). Pour des analyses plus d\'entraînements !`,
+            message: `Votre rapport contient ${workoutsForExport.length} entraînement(s). Pour des analyses plus complètes, continuez d'ajouter d'entraînements !`,
             type: 'info',
             duration: 4000
           });
@@ -525,7 +556,7 @@ function Dashboard() {
         if (typeof addToast === 'function') {
           addToast({
             title: 'Excellent historique détecté !',
-            message: `📊 Votre rapport comprend ${workoutsForExport.length} entraînements - parfait pour une analyse complète !`,
+            message: `Votre rapport comprend ${workoutsForExport.length} entraînements - parfait pour une analyse complète !`,
             type: 'success',
             duration: 4000
           });
@@ -542,7 +573,9 @@ function Dashboard() {
         duration: w.duration || 0,
         difficulty: w.difficulty || 1,
         calories: w.calories || 0,
-        location: w.location || 'Non spécifié'
+        location: w.location || 'Non spécifié',
+        notes: w.notes ? w.notes.replace(/[^\w\s\-_àâäéèêëíîïóôöúûüýÿç]/g, '') : 'Aucune note', // Clean special chars
+        metrics: w.metrics || {}
       }));
       
       // Calculate workout type distribution
@@ -553,12 +586,11 @@ function Dashboard() {
       
       const totalWorkouts = workoutsWithDetails.length;
 
-      // If, after all, there are no workouts to put in the PDF (e.g. overview was > 0 but getWorkouts returned empty)
-      // we should not proceed to avoid jsPDF errors with empty data.
+      // If no workouts available
       if (totalWorkouts === 0) {
         if (typeof addToast === 'function') {
           addToast({
-              title: 'ℹ️ Aucune donnée à exporter',
+              title: 'Aucune donnée à exporter',
               message: 'Impossible de générer le PDF car aucune donnée d\'entraînement n\'a été trouvée après la récupération.',
               type: 'info',
               duration: 6000
@@ -575,6 +607,38 @@ function Dashboard() {
       const avgDuration = Math.round(totalDuration / totalWorkouts);
       const avgCalories = Math.round(totalCalories / totalWorkouts);
       
+      // Calculate additional metrics
+      const avgDifficulty = (workoutsWithDetails.reduce((sum, w) => sum + w.difficulty, 0) / totalWorkouts).toFixed(1);
+      const maxCaloriesSession = Math.max(...workoutsWithDetails.map(w => w.calories));
+      const maxDurationSession = Math.max(...workoutsWithDetails.map(w => w.duration));
+      
+      // Time period analysis
+      const dates = workoutsWithDetails.map(w => new Date(w.date.split('/').reverse().join('-')));
+      const oldestDate = new Date(Math.min(...dates));
+      const newestDate = new Date(Math.max(...dates));
+      const periodDays = Math.ceil((newestDate - oldestDate) / (1000 * 60 * 60 * 24));
+      const periodMonths = Math.ceil(periodDays / 30);
+      
+      // Mock body metrics for comprehensive demo (would come from API in real app)
+      const mockBodyMetrics = {
+        currentWeight: 72.5,
+        startWeight: 75.0,
+        currentBodyFat: 14.2,
+        startBodyFat: 18.0,
+        currentMuscle: 44.8,
+        startMuscle: 42.0,
+        currentBMR: 1785,
+        startBMR: 1650
+      };
+      
+      // Mock objectives progress
+      const mockObjectives = [
+        { title: 'Objectif mensuel: 15 entrainements', progress: 87, target: 15, current: 13 },
+        { title: 'Bruler 8000 calories ce mois', progress: 92, target: 8000, current: 7360 },
+        { title: 'Atteindre 73kg', progress: 75, target: 73, current: 72.5 },
+        { title: 'Reduire masse grasse a 15%', progress: 95, target: 15, current: 14.2 }
+      ];
+      
       // Generate PDF
       const doc = new jsPDF('p', 'mm', 'a4');
       const pageWidth = doc.internal.pageSize.width;
@@ -587,7 +651,7 @@ function Dashboard() {
         y = 20;
       };
       
-      // COVER PAGE - Simple and clean
+      // COVER PAGE - Clean and professional
       doc.setFillColor(255, 107, 53);
       doc.rect(0, 0, pageWidth, pageHeight, 'F');
       
@@ -603,11 +667,12 @@ function Dashboard() {
       // User info section
       doc.setFontSize(16);
       doc.setFont('helvetica', 'normal');
-      doc.text(`Utilisateur: ${user?.name || 'Athlète GRIMPE'}`, pageWidth / 2, 90, { align: 'center' });
+      const userName = user?.name || 'Athlète GRIMPE';
+      doc.text(`Utilisateur: ${userName}`, pageWidth / 2, 90, { align: 'center' });
       
       // Stats box - WHITE background for readability
       doc.setFillColor(255, 255, 255);
-      doc.rect(30, 110, pageWidth - 60, 90, 'F');
+      doc.rect(30, 110, pageWidth - 60, 120, 'F');
       
       // Stats content
       doc.setTextColor(0, 0, 0);
@@ -617,26 +682,77 @@ function Dashboard() {
       
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(13);
-      doc.text(`Total Entraînements: ${totalWorkouts} séances`, pageWidth / 2, 150, { align: 'center' });
-      doc.text(`Durée Totale: ${Math.round(totalDuration / 60)}h ${totalDuration % 60}min`, pageWidth / 2, 165, { align: 'center' });
-      doc.text(`Calories Brûlées: ${totalCalories.toLocaleString()} cal`, pageWidth / 2, 180, { align: 'center' });
-      doc.text(`Moyenne par session: ${avgDuration}min - ${avgCalories} cal`, pageWidth / 2, 195, { align: 'center' });
+      doc.text(`Total Entrainements: ${totalWorkouts} seances`, pageWidth / 2, 150, { align: 'center' });
+      doc.text(`Duree Totale: ${formatDuration(totalDuration)}`, pageWidth / 2, 165, { align: 'center' });
+      doc.text(`Calories Brulees: ${totalCalories.toLocaleString()} cal`, pageWidth / 2, 180, { align: 'center' });
+      doc.text(`Moyenne par session: ${formatDuration(avgDuration)} - ${avgCalories} cal`, pageWidth / 2, 195, { align: 'center' });
+      doc.text(`Difficulte moyenne: ${avgDifficulty}/5`, pageWidth / 2, 210, { align: 'center' });
       
-      // Date and user info
+      // Date and period info
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(11);
-      doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')} pour ${user?.name || 'Utilisateur'}`, pageWidth / 2, 260, { align: 'center' });
+      doc.text(`Rapport genere le ${new Date().toLocaleDateString('fr-FR')}`, pageWidth / 2, 255, { align: 'center' });
       doc.setFontSize(9);
-      doc.text(`${totalWorkouts} entraînements analysés • Données personnalisées`, pageWidth / 2, 275, { align: 'center' });
+      doc.text(`Periode analysee: ${periodMonths} mois (${periodDays} jours)`, pageWidth / 2, 270, { align: 'center' });
+      doc.text(`${totalWorkouts} entrainements analyses - Donnees personnalisees`, pageWidth / 2, 280, { align: 'center' });
       
-      // PAGE 2 - Analysis
+      // PAGE 2 - Body Metrics and Performance Analysis
       addNewPage();
       
       doc.setTextColor(0, 0, 0);
       doc.setFontSize(24);
       doc.setFont('helvetica', 'bold');
-      doc.text('ANALYSE DETAILLEE', 20, y);
+      doc.text('ANALYSE PHYSIQUE ET PERFORMANCE', 20, y);
       y += 20;
+      
+      // Body metrics section
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Evolution des Metriques Corporelles', 20, y);
+      y += 10;
+      
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      
+      // Create metrics comparison table
+      const metricsData = [
+        ['Metrique', 'Debut', 'Actuel', 'Evolution'],
+        ['Poids (kg)', mockBodyMetrics.startWeight.toString(), mockBodyMetrics.currentWeight.toString(), 
+         `${(mockBodyMetrics.currentWeight - mockBodyMetrics.startWeight).toFixed(1)} kg`],
+        ['Masse grasse (%)', mockBodyMetrics.startBodyFat.toString(), mockBodyMetrics.currentBodyFat.toString(),
+         `${(mockBodyMetrics.currentBodyFat - mockBodyMetrics.startBodyFat).toFixed(1)}%`],
+        ['Masse musculaire (%)', mockBodyMetrics.startMuscle.toString(), mockBodyMetrics.currentMuscle.toString(),
+         `+${(mockBodyMetrics.currentMuscle - mockBodyMetrics.startMuscle).toFixed(1)}%`],
+        ['BMR (cal/jour)', mockBodyMetrics.startBMR.toString(), mockBodyMetrics.currentBMR.toString(),
+         `+${mockBodyMetrics.currentBMR - mockBodyMetrics.startBMR} cal`]
+      ];
+      
+      metricsData.forEach((row, index) => {
+        const isHeader = index === 0;
+        
+        if (isHeader) {
+          doc.setFillColor(75, 85, 99);
+          doc.rect(20, y - 2, 150, 8, 'F');
+          doc.setTextColor(255, 255, 255);
+          doc.setFont('helvetica', 'bold');
+        } else {
+          if (index % 2 === 0) {
+            doc.setFillColor(248, 250, 252);
+            doc.rect(20, y - 2, 150, 8, 'F');
+          }
+          doc.setTextColor(0, 0, 0);
+          doc.setFont('helvetica', 'normal');
+        }
+        
+        doc.text(row[0], 22, y + 3);
+        doc.text(row[1], 60, y + 3);
+        doc.text(row[2], 90, y + 3);
+        doc.text(row[3], 120, y + 3);
+        
+        y += 8;
+      });
+      
+      y += 15;
       
       // Performance section
       doc.setFontSize(16);
@@ -646,13 +762,17 @@ function Dashboard() {
       
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(11);
-      doc.text(`${user?.name || 'Cet utilisateur'} a complete ${totalWorkouts} entrainements au total.`, 20, y);
+      doc.text(`${userName} a complete ${totalWorkouts} entrainements au total.`, 20, y);
       y += 8;
-      doc.text(`Votre duree totale d'entrainement est de ${Math.round(totalDuration / 60)} heures et ${totalDuration % 60} minutes.`, 20, y);
+      doc.text(`Votre duree totale d'entrainement est de ${formatDuration(totalDuration)}.`, 20, y);
       y += 8;
       doc.text(`Vous avez brule ${totalCalories.toLocaleString()} calories en tout.`, 20, y);
       y += 8;
-      doc.text(`En moyenne, vos sessions durent ${avgDuration} minutes et brulent ${avgCalories} calories.`, 20, y);
+      doc.text(`En moyenne, vos sessions durent ${formatDuration(avgDuration)} et brulent ${avgCalories} calories.`, 20, y);
+      y += 8;
+      doc.text(`Session la plus longue: ${formatDuration(maxDurationSession)}`, 20, y);
+      y += 8;
+      doc.text(`Session la plus intense: ${maxCaloriesSession} calories`, 20, y);
       y += 8;
       
       // Exercise count highlight
@@ -660,9 +780,52 @@ function Dashboard() {
       doc.setFillColor(255, 247, 237);
       doc.rect(20, y, pageWidth - 40, 15, 'F');
       doc.setTextColor(255, 107, 53);
-      doc.text(`TOTAL: ${totalWorkouts} EXERCICES LOGGED DANS VOTRE PARCOURS FITNESS!`, 25, y + 10);
+      doc.text(`TOTAL: ${totalWorkouts} EXERCICES DANS VOTRE PARCOURS FITNESS!`, 25, y + 10);
       doc.setTextColor(0, 0, 0);
+      y += 25;
+      
+      // PAGE 3 - Objectives and Workout Distribution
+      addNewPage();
+      
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text('OBJECTIFS ET REPARTITION', 20, y);
       y += 20;
+      
+      // Objectives section
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Progres des Objectifs', 20, y);
+      y += 15;
+      
+      mockObjectives.forEach((objective, index) => {
+        // Objective title
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.text(objective.title, 20, y);
+        y += 8;
+        
+        // Progress bar
+        const barWidth = 100;
+        const barHeight = 6;
+        
+        // Background bar
+        doc.setFillColor(230, 230, 230);
+        doc.rect(20, y - 3, barWidth, barHeight, 'F');
+        
+        // Progress bar
+        doc.setFillColor(34, 197, 94); // Green for completed objectives
+        doc.rect(20, y - 3, (objective.progress / 100) * barWidth, barHeight, 'F');
+        
+        // Progress text
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text(`${objective.progress}% - ${objective.current}/${objective.target}`, 125, y);
+        
+        y += 15;
+      });
+      
+      y += 10;
       
       // Workout types section
       doc.setFontSize(16);
@@ -701,12 +864,8 @@ function Dashboard() {
         y += 15;
       });
       
-      y += 10;
-      
-      // Recent workouts section
-      if (y > pageHeight - 80) {
-        addNewPage();
-      }
+      // PAGE 4 - Recent workouts and detailed history
+      addNewPage();
       
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
@@ -730,7 +889,7 @@ function Dashboard() {
       
       // Table rows
       const recentWorkouts = workoutsWithDetails
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .sort((a, b) => new Date(b.date.split('/').reverse().join('-')) - new Date(a.date.split('/').reverse().join('-')))
         .slice(0, 20);
       
       doc.setTextColor(0, 0, 0);
@@ -752,7 +911,7 @@ function Dashboard() {
         
         doc.text(workout.date, 25, y);
         doc.text(workout.type.length > 12 ? workout.type.substring(0, 12) + '...' : workout.type, 60, y);
-        doc.text(`${workout.duration}min`, 100, y);
+        doc.text(`${formatDuration(workout.duration)}`, 100, y);
         doc.text(`${workout.difficulty}/5`, 135, y);
         doc.text(`${workout.calories}`, 165, y);
         
@@ -768,8 +927,8 @@ function Dashboard() {
       doc.text('Continuez vos efforts! Chaque entrainement compte.', pageWidth / 2, pageHeight - 15, { align: 'center' });
       
       // Save PDF with user-specific filename
-      const userName = user?.name ? user.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Athlete_GRIMPE';
-      const filename = `GRIMPE_${userName}_${totalWorkouts}exercices_${new Date().toISOString().slice(0, 10)}.pdf`;
+      const userNameClean = userName ? userName.replace(/[^a-zA-Z0-9]/g, '_') : 'Athlete_GRIMPE';
+      const filename = `GRIMPE_${userNameClean}_${totalWorkouts}exercices_${new Date().toISOString().slice(0, 10)}.pdf`;
       
       // Save the PDF file
       doc.save(filename);
@@ -778,10 +937,10 @@ function Dashboard() {
       setTimeout(() => {
         setPdfLoading(false);
         
-        // Enhanced success notification
+        // Enhanced success notification (cleaned)
         if (typeof addToast === 'function') {
           addToast({
-            title: '🎉 Rapport PDF téléchargé !',
+            title: 'Rapport PDF téléchargé !',
             message: `Votre rapport fitness complet (${totalWorkouts} entraînements) a été généré et téléchargé avec succès. Fichier: ${filename}`,
             type: 'success',
             duration: 7000
@@ -795,7 +954,7 @@ function Dashboard() {
       setPdfLoading(false);
       if (typeof addToast === 'function') {
         addToast({
-          title: '❌ Erreur de génération',
+          title: 'Erreur de génération',
           message: `Une erreur est survenue lors de la création du PDF: ${error.message}. Veuillez vérifier votre connexion et réessayer.`,
           type: 'error',
           duration: 5000
@@ -830,11 +989,11 @@ function Dashboard() {
             Chaque entraînement vous rapproche de la grandeur.
           </p>
           <div className="flex items-center justify-center space-x-2 text-sm font-bold uppercase tracking-widest">
-            <span className={darkMode ? 'text-orange-400' : 'text-orange-600'}>📊 ANALYSEZ</span>
+            <span className={darkMode ? 'text-orange-400' : 'text-orange-600'}>ANALYSEZ</span>
             <span className={darkMode ? 'text-slate-500' : 'text-slate-400'}>•</span>
-            <span className={darkMode ? 'text-red-400' : 'text-red-600'}>💪 PROGRESSEZ</span>
+            <span className={darkMode ? 'text-red-400' : 'text-red-600'}>PROGRESSEZ</span>
             <span className={darkMode ? 'text-slate-500' : 'text-slate-400'}>•</span>
-            <span className={darkMode ? 'text-green-400' : 'text-green-600'}>🚀 EXCELLEZ</span>
+            <span className={darkMode ? 'text-green-400' : 'text-green-600'}>EXCELLEZ</span>
           </div>
         </div>
 
@@ -866,24 +1025,14 @@ function Dashboard() {
                   <h3 className={`text-xl font-bold transition-colors ${
                     darkMode ? 'text-slate-100' : 'text-slate-800'
                   }`}>
-                    {(overview?.totalWorkouts || 0) === 0 ? '🔒 Exportation Verrouillée' : '📊 Exportation de Données'}
+                    {(overview?.totalWorkouts || 0) === 0 ? 'Exportation Verrouillée' : 'Exportation de Données'}
                   </h3>
                   <p className={`text-sm transition-colors ${
                     darkMode ? 'text-slate-400' : 'text-slate-600'
                   }`}>
                     {(overview?.totalWorkouts || 0) === 0 
-                      ? 'Enregistrez vos premiers entraînements pour débloquer l\'exportation PDF'
-                      : 'Générez un rapport PDF détaillé avec vos entraînements et statistiques'
-                    }
-                  </p>
-                  <p className={`text-xs mt-1 transition-colors ${
-                    (overview?.totalWorkouts || 0) === 0
-                      ? darkMode ? 'text-slate-500' : 'text-gray-500'
-                      : darkMode ? 'text-green-400' : 'text-green-600'
-                  }`}>
-                    {(overview?.totalWorkouts || 0) === 0 
-                      ? '🚫 Minimum 1 entraînement requis • Commencez dès maintenant !'
-                      : '✅ Analyses graphiques • Historique complet • Données personnalisées'
+                      ? 'Minimum 1 entraînement requis • Commencez dès maintenant !'
+                      : 'Analyses graphiques • Historique complet • Données personnalisées'
                     }
                   </p>
                 </div>
@@ -956,9 +1105,8 @@ function Dashboard() {
               },
               { 
                 label: "Durée Totale", 
-                value: overview?.totalDuration || 0, 
+                value: formatDuration(overview?.totalDuration || 0), 
                 type: 'time', 
-                unit: 'min', 
                 change: overview?.changes?.duration || 0,
                 subtitle: overview?.contexts?.duration || ''
               },

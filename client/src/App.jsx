@@ -5,9 +5,19 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import LogWorkout from './pages/LogWorkout';
 import Progress from './pages/Progress';
-import Settings from './pages/Settings';
+import Profile from './pages/Profile';
 import About from './pages/About';
-import { FaMoon, FaSun, FaBars, FaTimes, FaUserCircle, FaSignOutAlt, FaCog, FaUser, FaMountain, FaBolt, FaRocket } from 'react-icons/fa';
+import { FaMoon } from 'react-icons/fa';
+import { FaSun } from 'react-icons/fa';
+import { FaBars } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
+import { FaUserCircle } from 'react-icons/fa';
+import { FaSignOutAlt } from 'react-icons/fa';
+import { FaCog } from 'react-icons/fa';
+import { FaUser } from 'react-icons/fa';
+import { FaMountain } from 'react-icons/fa';
+import { FaBolt } from 'react-icons/fa';
+import { FaRocket } from 'react-icons/fa';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -115,7 +125,7 @@ function MainLayout({ children, darkMode, toggleDarkMode }) {
                 <NavLink href="/dashboard" icon={<FaRocket />}>Tableau de bord</NavLink>
                 <NavLink href="/log-workout" icon={<FaBolt />}>Enregistrer</NavLink>
                 <NavLink href="/progress" icon={<FaMountain />}>Progrès</NavLink>
-                <NavLink href="/settings" icon={<FaCog />}>Paramètres</NavLink>
+                <NavLink href="/profile" icon={<FaUser />}>Profil</NavLink>
                 <NavLink href="/about" icon={<FaUser />}>À propos</NavLink>
               </div>
             </div>
@@ -177,12 +187,12 @@ function MainLayout({ children, darkMode, toggleDarkMode }) {
                       <button
                         onClick={() => {
                           setProfileMenuOpen(false);
-                          navigate('/settings');
+                          navigate('/profile');
                         }}
                         className="flex items-center space-x-3 w-full p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       >
                         <FaCog className="h-4 w-4" />
-                        <span>Paramètres</span>
+                        <span>Profil</span>
                       </button>
                       <button
                         onClick={handleLogout}
@@ -260,11 +270,11 @@ function MainLayout({ children, darkMode, toggleDarkMode }) {
                     Progrès
                   </MobileNavLink>
                   <MobileNavLink 
-                    href="/settings" 
-                    icon={<FaCog />}
+                    href="/profile" 
+                    icon={<FaUser />}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Paramètres
+                    Profil
                   </MobileNavLink>
                   <MobileNavLink 
                     href="/about" 
@@ -486,10 +496,10 @@ function App() {
                   </MainLayout>
                 </ProtectedRoute>
               } />
-              <Route path="/settings" element={
+              <Route path="/profile" element={
                 <ProtectedRoute>
                   <MainLayout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
-                    <Settings />
+                    <Profile />
                   </MainLayout>
                 </ProtectedRoute>
               } />

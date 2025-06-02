@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import { connectDB } from './database/connection.js';
 import authRoutes from './routes/authRoutes.js';
 import workoutRoutes from './routes/workout.routes.js';
+import userRoutes from './routes/user.routes.js';
 // import pdfRoutes from './routes/pdfRoutes.js'; // Temporarily disabled due to pdf-parse issue
 
 // Load environment variables
@@ -68,6 +69,7 @@ app.get('/api/health', (req, res) => {
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/workouts', workoutRoutes);
+app.use('/api/users', userRoutes);
 // app.use('/api/pdf', pdfRoutes); // Temporarily disabled
 
 // Error handler

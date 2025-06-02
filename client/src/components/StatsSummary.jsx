@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { ThemeContext } from '../App';
-import { 
-  FaDumbbell, 
-  FaFire, 
-  FaClock, 
-  FaTrophy, 
-  FaRunning, 
-  FaHeartbeat,
-  FaChartLine,
-  FaWeight,
-  FaBolt
-} from 'react-icons/fa';
+import { FaDumbbell } from 'react-icons/fa';
+import { FaFire } from 'react-icons/fa';
+import { FaClock } from 'react-icons/fa';
+import { FaTrophy } from 'react-icons/fa';
+import { FaRunning } from 'react-icons/fa';
+import { FaHeartbeat } from 'react-icons/fa';
+import { FaChartLine } from 'react-icons/fa';
+import { FaWeight } from 'react-icons/fa';
+import { FaBolt } from 'react-icons/fa';
+import { FaCalendarDay } from 'react-icons/fa';
+import { FaArrowUp } from 'react-icons/fa';
+import { FaArrowDown } from 'react-icons/fa';
+import { FaMinus } from 'react-icons/fa';
 
 function StatsSummary({ 
   stats = [], 
@@ -154,12 +156,6 @@ function StatsSummary({
                 ? 'bg-gray-800 border-gray-700 hover:bg-gray-750' 
                 : 'bg-white border-gray-200 hover:shadow-md'
               }
-              ${highlightRecent && index === 0 
-                ? darkMode 
-                  ? 'ring-2 ring-primary-500 ring-opacity-50' 
-                  : 'ring-2 ring-primary-500 ring-opacity-30'
-                : ''
-              }
               ${index === 0 ? 'lg:rounded-l-lg' : ''}
               ${index === stats.length - 1 ? 'lg:rounded-r-lg' : ''}
             `}
@@ -170,20 +166,23 @@ function StatsSummary({
             </div>
             <div className="flex flex-col items-center gap-2">
               <div className={`text-2xl lg:text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{formatValue(animatedValues[index], stat.unit)}</div>
-              {stat.change !== undefined && (
-                <div className={`text-sm lg:text-xs font-medium ${
+              {stat.change !== undefined && stat.change !== 0 && (
+                <div className={`text-sm lg:text-xs font-medium flex items-center gap-1 ${
                   stat.change > 0 
                     ? 'text-green-500' 
                     : stat.change < 0 
                       ? 'text-red-500' 
                       : darkMode ? 'text-gray-500' : 'text-gray-400'
                 }`}>
-                  {stat.change > 0 ? '+' : ''}{stat.change}%
+                  {stat.change > 0 ? <FaArrowUp className="text-xs" /> : stat.change < 0 ? <FaArrowDown className="text-xs" /> : <FaMinus className="text-xs" />}
+                  {Math.abs(stat.change)}%
                 </div>
               )}
             </div>
             {stat.subtitle && (
-              <div className={`mt-1 text-xs lg:text-[0.8rem] break-words text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{stat.subtitle}</div>
+              <div className={`mt-1 text-xs lg:text-[0.8rem] break-words text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                {stat.subtitle}
+              </div>
             )}
           </div>
         ))}

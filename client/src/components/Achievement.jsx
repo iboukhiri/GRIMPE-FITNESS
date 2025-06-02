@@ -1,6 +1,11 @@
 import React, { useContext } from 'react';
+import { FaTrophy } from 'react-icons/fa';
+import { FaMedal } from 'react-icons/fa';
+import { FaAward } from 'react-icons/fa';
+import { FaCrown } from 'react-icons/fa';
+import { FaStar } from 'react-icons/fa';
+import { FaCheck } from 'react-icons/fa';
 import { ThemeContext } from '../App';
-import { FaTrophy, FaMedal, FaAward, FaCrown, FaStar, FaCheck } from 'react-icons/fa';
 
 function Achievement({ 
   title, 

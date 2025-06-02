@@ -1,5 +1,8 @@
 import React, { useContext } from 'react';
-import { FaHome, FaPlusCircle, FaChartBar, FaUser } from 'react-icons/fa';
+import { FaHome } from 'react-icons/fa';
+import { FaPlusCircle } from 'react-icons/fa';
+import { FaChartBar } from 'react-icons/fa';
+import { FaUser } from 'react-icons/fa';
 import { ThemeContext } from '../App';
 
 const BottomNav = () => {

@@ -1,16 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { 
-  FaChartLine, 
-  FaTrophy, 
-  FaFire, 
-  FaHeartbeat, 
-  FaRunning, 
-  FaDumbbell, 
-  FaCalendarAlt,
-  FaClock,
-  FaEye,
-  FaEyeSlash
-} from 'react-icons/fa';
+import { FaChartLine } from 'react-icons/fa';
+import { FaTrophy } from 'react-icons/fa';
+import { FaFire } from 'react-icons/fa';
+import { FaHeartbeat } from 'react-icons/fa';
+import { FaRunning } from 'react-icons/fa';
+import { FaDumbbell } from 'react-icons/fa';
+import { FaCalendarAlt } from 'react-icons/fa';
+import { FaClock } from 'react-icons/fa';
+import { FaEye } from 'react-icons/fa';
+import { FaEyeSlash } from 'react-icons/fa';
 import { ThemeContext } from '../App';
 import { 
   LineChart, 
@@ -27,7 +25,8 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
+  Cell,
+  ComposedChart
 } from 'recharts';
 import Card from '../components/Card';
 import Button from '../components/Button';
@@ -494,6 +493,23 @@ function Progress() {
   
   const periodStats = calculatePeriodStats();
 
+  // Helper function to format duration intelligently
+  const formatDuration = (durationInMinutes) => {
+    if (!durationInMinutes || durationInMinutes === 0) return '0 min';
+    
+    if (durationInMinutes < 60) {
+      return `${Math.round(durationInMinutes)} min`;
+    } else {
+      const hours = Math.floor(durationInMinutes / 60);
+      const minutes = Math.round(durationInMinutes % 60);
+      if (minutes === 0) {
+        return `${hours}h`;
+      } else {
+        return `${hours}h ${minutes}min`;
+      }
+    }
+  };
+
   // Helper function to get color for workout types
   const getTypeColor = (type) => {
     const colorMap = {
@@ -548,11 +564,22 @@ function Progress() {
       return (
         <div className={`p-3 rounded-lg shadow-md ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
           <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{label}</p>
-          {payload.map((entry, index) => (
-            <p key={`item-${index}`} className="text-sm" style={{ color: entry.color }}>
-              {entry.name}: {entry.value} {entry.unit || ''}
-            </p>
-          ))}
+          {payload.map((entry, index) => {
+            let displayValue = entry.value;
+            let unit = entry.unit || '';
+            
+            // Format duration intelligently
+            if (entry.dataKey === 'duration') {
+              displayValue = formatDuration(entry.value);
+              unit = '';
+            }
+            
+            return (
+              <p key={`item-${index}`} className="text-sm" style={{ color: entry.color }}>
+                {entry.name}: {displayValue} {unit}
+              </p>
+            );
+          })}
         </div>
       );
     }
@@ -763,9 +790,8 @@ function Progress() {
                       },
                       { 
                         label: "Durée Totale", 
-                        value: periodStats.totalDuration, 
+                        value: formatDuration(periodStats.totalDuration), 
                         type: 'time',
-                        unit: 'min',
                         change: periodChanges.duration,
                         subtitle: periodChanges.contexts?.duration || ''
                       },
@@ -861,7 +887,7 @@ function Progress() {
                   </div>
                 ) : (
                 <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={trendsData.map(item => ({
+                    <ComposedChart data={trendsData.map(item => ({
                       name: new Date(item._id).toLocaleDateString('fr-FR', { 
                         month: 'short', 
                         day: 'numeric' 
@@ -869,7 +895,7 @@ function Progress() {
                       count: item.count,
                       duration: item.totalDuration,
                       calories: item.totalCalories || 0,
-                    }))} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
+                    }))} margin={{ top: 10, right: 30, left: 0, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#374151' : '#e5e7eb'} />
                     <XAxis 
                       dataKey="name" 
@@ -877,27 +903,35 @@ function Progress() {
                       axisLine={{ stroke: darkMode ? '#4B5563' : '#D1D5DB' }}
                     />
                     <YAxis 
+                      yAxisId="left"
+                      orientation="left"
+                      tick={{ fill: darkMode ? '#9CA3AF' : '#4B5563' }} 
+                      axisLine={{ stroke: darkMode ? '#4B5563' : '#D1D5DB' }}
+                    />
+                    <YAxis 
+                      yAxisId="right"
+                      orientation="right"
                       tick={{ fill: darkMode ? '#9CA3AF' : '#4B5563' }} 
                       axisLine={{ stroke: darkMode ? '#4B5563' : '#D1D5DB' }}
                     />
                     <Tooltip content={customTooltip} />
                     <Legend />
-                    <Line 
-                      type="monotone" 
+                    <Bar 
+                      yAxisId="left"
                       dataKey="count" 
                       name="Entraînements" 
-                      stroke="#4F46E5" 
-                      activeDot={{ r: 8 }}
-                      strokeWidth={2}
+                      fill="#4F46E5" 
+                      barSize={20}
                     />
                     <Line 
+                      yAxisId="right"
                       type="monotone" 
                       dataKey="duration" 
-                      name="Durée (min)" 
+                      name="Durée" 
                       stroke="#10B981" 
                       strokeWidth={2}
                     />
-                  </LineChart>
+                  </ComposedChart>
                 </ResponsiveContainer>
                 )}
               </div>
@@ -980,7 +1014,7 @@ function Progress() {
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart 
+                    <ComposedChart 
                       data={trendsData.map(item => ({
                         name: new Date(item._id).toLocaleDateString('fr-FR', { 
                           month: 'short', 
@@ -992,7 +1026,7 @@ function Progress() {
                         difficulty: item.avgDifficulty || 0,
                         enjoyment: item.avgEnjoyment || 0,
                       }))} 
-                      margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
+                      margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#475569' : '#fed7aa'} />
                       <XAxis 
@@ -1001,31 +1035,41 @@ function Progress() {
                         axisLine={{ stroke: darkMode ? '#64748b' : '#ea580c' }}
                       />
                       <YAxis 
+                        yAxisId="left"
+                        orientation="left"
+                        tick={{ fill: darkMode ? '#e2e8f0' : '#7c2d12', fontWeight: 600 }}
+                        axisLine={{ stroke: darkMode ? '#64748b' : '#ea580c' }}
+                        domain={[0, 'dataMax + 1']}
+                      />
+                      <YAxis 
+                        yAxisId="right"
+                        orientation="right"
                         tick={{ fill: darkMode ? '#e2e8f0' : '#7c2d12', fontWeight: 600 }}
                         axisLine={{ stroke: darkMode ? '#64748b' : '#ea580c' }}
                       />
                       <Tooltip content={customTooltip} cursor={{ fill: darkMode ? '#f97316' + '22' : '#ea580c22' }} />
                       <Legend />
-                      <Line 
-                        type="monotone" 
+                      <Bar 
+                        yAxisId="left"
                         dataKey="count" 
                         name="Entraînements" 
-                        stroke={darkMode ? "#f97316" : "#ea580c"}
-                        activeDot={{ r: 8 }}
-                        strokeWidth={3}
+                        fill={darkMode ? "#f97316" : "#ea580c"}
+                        barSize={25}
                         isAnimationActive={true}
                         animationDuration={1200}
                       />
                       <Line 
+                        yAxisId="right"
                         type="monotone" 
                         dataKey="duration" 
-                        name="Durée (min)" 
+                        name="Durée" 
                         stroke={darkMode ? "#10B981" : "#059669"}
                         strokeWidth={3}
                         isAnimationActive={true}
                         animationDuration={1400}
                       />
                       <Line 
+                        yAxisId="right"
                         type="monotone" 
                         dataKey="calories" 
                         name="Calories" 
@@ -1035,7 +1079,7 @@ function Progress() {
                         isAnimationActive={true}
                         animationDuration={1600}
                       />
-                    </LineChart>
+                    </ComposedChart>
                   </ResponsiveContainer>
                 )}
               </div>
@@ -1076,7 +1120,7 @@ function Progress() {
                       <div className="ml-3">
                         <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Durée Moy.</p>
                         <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          {Math.round(periodStats.totalDuration / Math.max(periodStats.totalWorkouts, 1))}min
+                          {formatDuration(periodStats.totalDuration / Math.max(periodStats.totalWorkouts, 1))}
                         </p>
                       </div>
                     </div>
@@ -1140,7 +1184,7 @@ function Progress() {
                         <FaClock className="text-blue-500 mr-2" />
                         <div>
                           <p className="font-medium">Durée maximale</p>
-                          <p className="text-lg font-bold">{recordsData.maxDuration.duration} min</p>
+                          <p className="text-lg font-bold">{formatDuration(recordsData.maxDuration.duration)}</p>
                           <p className="text-sm text-gray-500">{recordsData.maxDuration.type}</p>
                         </div>
                       </div>

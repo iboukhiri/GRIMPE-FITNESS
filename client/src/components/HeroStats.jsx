@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
+import { FaChartLine } from 'react-icons/fa';
+import { FaFire } from 'react-icons/fa';
 import { ThemeContext } from '../App';
-import { FaChartLine, FaFire } from 'react-icons/fa';
 
 const HeroStats = ({
   title = 'Enregistrer un entraînement',

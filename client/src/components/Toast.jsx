@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { FaCheckCircle, FaExclamationCircle, FaInfoCircle, FaTimes } from 'react-icons/fa';
+import { FaCheckCircle } from 'react-icons/fa';
+import { FaExclamationCircle } from 'react-icons/fa';
+import { FaInfoCircle } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
 import { ThemeContext } from '../App';
 
 const Toast = ({ 

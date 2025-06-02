@@ -1,6 +1,15 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaEnvelope, FaLock, FaMountain, FaBolt, FaSignInAlt, FaEye, FaEyeSlash, FaArrowRight, FaShieldAlt, FaFingerprint } from 'react-icons/fa';
+import { FaEnvelope } from 'react-icons/fa';
+import { FaLock } from 'react-icons/fa';
+import { FaMountain } from 'react-icons/fa';
+import { FaBolt } from 'react-icons/fa';
+import { FaSignInAlt } from 'react-icons/fa';
+import { FaEye } from 'react-icons/fa';
+import { FaEyeSlash } from 'react-icons/fa';
+import { FaArrowRight } from 'react-icons/fa';
+import { FaShieldAlt } from 'react-icons/fa';
+import { FaFingerprint } from 'react-icons/fa';
 import { ThemeContext, useToast } from '../App';
 import Button from '../components/Button';
 import { useAuth } from '../contexts/AuthContext';

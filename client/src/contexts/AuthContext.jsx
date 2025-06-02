@@ -120,6 +120,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Update user function (alias for updateProfile for compatibility)
+  const updateUser = updateProfile;
+
   // Update user preferences
   const updatePreferences = async (preferences) => {
     try {
@@ -147,6 +150,7 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         updateProfile,
+        updateUser,
         updatePreferences
       }}
     >

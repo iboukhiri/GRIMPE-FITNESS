@@ -1,6 +1,11 @@
 import React, { useState, useContext } from 'react';
+import { FaChevronLeft } from 'react-icons/fa';
+import { FaChevronRight } from 'react-icons/fa';
+import { FaCalendarAlt } from 'react-icons/fa';
+import { FaRunning } from 'react-icons/fa';
+import { FaDumbbell } from 'react-icons/fa';
+import { FaHeartbeat } from 'react-icons/fa';
 import { ThemeContext } from '../App';
-import { FaChevronLeft, FaChevronRight, FaCalendarAlt, FaRunning, FaDumbbell, FaHeartbeat } from 'react-icons/fa';
 
 function WorkoutCalendar({ workouts = [], onSelectDate }) {
   const { darkMode } = useContext(ThemeContext);
